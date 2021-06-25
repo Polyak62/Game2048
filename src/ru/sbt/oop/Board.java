@@ -4,33 +4,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Board {
+public abstract class Board<K,V> {
 
     int weigh;
     int height;
-    Map<ru.sbt.oop.Key, Integer> board = new HashMap<>();
+    Map<K,V> board = new HashMap<>();
 
     public Board(int weigh, int height) {
         this.weigh = weigh;
         this.height = height;
     }
 
-    abstract public void fillBoard(List<Integer> list);
+    abstract public void fillBoard(List<V> list);
 
-    abstract public List<Key> availableSpace();
+    abstract public List<K> availableSpace();
 
-    abstract public void addItem(Key key, Integer value);
+    abstract public void addItem(Key key, V value);
 
     abstract public Key getKey(int i, int j);
 
-    abstract public Integer getValue(Key key);
+    abstract public V getValue(Key key);
 
-    abstract public List<Key> getColumn(int j);
+    abstract public List<K> getColumn(int j);
 
-    abstract public List<Key> getRow(int i);
+    abstract public List<K> getRow(int i);
 
-    abstract public boolean hasValue(Integer value);
+    abstract public boolean hasValue(V value);
 
-    abstract public List<Integer> getValues(List<Key> keys);
+    abstract public List<V> getValues(List<K> keys);
 
 }

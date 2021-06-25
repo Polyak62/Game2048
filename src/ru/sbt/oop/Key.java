@@ -1,5 +1,7 @@
 package ru.sbt.oop;
 
+import java.util.Objects;
+
 public class Key {
     private int i;
     private int j;
@@ -25,5 +27,25 @@ public class Key {
         this.i = i;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Key key = (Key) o;
+        return i == key.i &&
+                j == key.j;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(i, j);
+    }
+
+    @Override
+    public String toString() {
+        return "Key{" +
+                "i=" + i +
+                ", j=" + j +
+                '}';
+    }
 }
