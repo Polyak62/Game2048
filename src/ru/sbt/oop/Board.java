@@ -19,11 +19,11 @@ public abstract class Board<K,V> {
 
     abstract public List<K> availableSpace();
 
-    abstract public void addItem(Key key, V value);
+    abstract public void addItem(K key, V value);
 
-    abstract public Key getKey(int i, int j);
+    abstract public K getKey(int i, int j);
 
-    abstract public V getValue(Key key);
+    abstract public V getValue(K key);
 
     abstract public List<K> getColumn(int j);
 

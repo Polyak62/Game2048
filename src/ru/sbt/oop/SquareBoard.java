@@ -1,17 +1,22 @@
 package ru.sbt.oop;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class SquareBoard<V> extends Board<Key, V> {
+    private int size;
 
     public SquareBoard(int size) {
         super(size, size);
+        this.size = size;
     }
 
     @Override
     public void fillBoard(List<V> list) {
+        if (list.size() > size * size){
+            throw new RuntimeException();
+        }
         for (int c = 0; c < list.size(); c++) {
             int j = c % weigh;
             int i = c / height;
@@ -21,21 +26,23 @@ public class SquareBoard<V> extends Board<Key, V> {
     }
 
     @Override
+    //Возвращает все ключи, значение которых null
     public List<Key> availableSpace() {
-        //return board.entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).collect(Collectors.toList());
-        ArrayList list = new ArrayList();
-        for (Key key : board.keySet()) {
-            if (board.get(key) == null) {
-                list.add(key);
-            }
-        }
-        return list;
+        return board.entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).collect(Collectors.toList());
+//        ArrayList listValuesNull = new ArrayList();
+//        for (Key key : board.keySet()) {
+//            if (board.get(key) == null) {
+//                listValuesNull.add(key);
+//            }
+//        }
+//        return listValuesNull;
     }
 
     @Override
     public void addItem(Key key, V value) {
         board.put(key, value);
     }
+
 
     @Override
     public Key getKey(int i, int j) {
@@ -54,31 +61,49 @@ public class SquareBoard<V> extends Board<Key, V> {
 
     @Override
     public List<Key> getColumn(int j) {
-        ArrayList<Key> listReturn = new ArrayList<>();
-        ArrayList<Key> list = new ArrayList<>(board.keySet());
-        list.sort(Comparator.comparingInt(Key::getI));
-        for (int c = 0; c < list.size(); c++) {
-            if (list.get(c).getJ() == j) {
-                listReturn.add(list.get(c));
-            }
+//        ArrayList<Key> listReturn = new ArrayList<>();
+//        ArrayList<Key> list = new ArrayList<>(board.keySet());
+//        list.sort(Comparator.comparingInt(Key::getJ));
+//        for (Key key : list) {
+//            if (key.getJ() == j) {
+//                listReturn.add(key);
+//            }
+//        }
+//        return listReturn;
+        List<Key> column = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            column.add(getKey(i, j));
         }
-        return listReturn;
+        return column;
     }
 
     @Override
     public List<Key> getRow(int i) {
-        ArrayList<Key> listReturn = new ArrayList<>();
-        for (Key key : board.keySet()) {
-            if (key.getI() == i) {
-                listReturn.add(key);
-            }
+//        ArrayList<Key> listReturn = new ArrayList<>();
+//        ArrayList<Key> list = new ArrayList<>(board.keySet());
+//        list.sort(Comparator.comparingInt(Key::getI));
+//        for (Key key : list) {
+//            if (key.getI() == i) {
+//                listReturn.add(key);
+//            }
+//        }
+//        return listReturn;
+
+        List<Key> row = new ArrayList<>();
+        for (int j = 0; j < weigh; j++) {
+            row.add(getKey(i, j));
         }
-        return listReturn;
+        return row;
     }
 
     @Override
     public boolean hasValue(V value) {
-        return board.containsValue(value);
+        for (Key key : board.keySet()) {
+            if (board.get(key) == value) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

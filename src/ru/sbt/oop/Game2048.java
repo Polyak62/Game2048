@@ -1,5 +1,7 @@
 package ru.sbt.oop;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -9,60 +11,114 @@ public class Game2048 implements Game {
     GameHelper helper = new GameHelper();
     Random random = new Random();
 
-//    public Game2048(Board board){
-//        this.board = board;
-//    }
 
     @Override
     public void init() {
-//закинуть в board две рандомные ячейки (два ключа со значением i и j)
-        //сгенирировать 2 рандомных разных ключа и положить их в board
-        // вызовом метода getItem
-        addItem();
-        addItem();
-
+        List<Integer> listBoard = new ArrayList<>();
+        for (int i = 0; i < board.weigh * board.height; i++) {
+            listBoard.add(null);
+        }
+        board.fillBoard(listBoard);
+        try {
+            addItem();
+            addItem();
+        } catch (NotEnoughSpace notEnoughSpace) {
+            notEnoughSpace.printStackTrace();
+        }
 
     }
 
+
     @Override
     public boolean canMove() {
-        for (int i = 0; i < GAME_SIZE; i++) {
-            List<Key> listKey = board.getRow(i);
-            List listValue = board.getValues(listKey);
-            for (int j = 0; j < GAME_SIZE - 1; j++) {
-                if (listValue.get(j) == null || listValue.get(j + 1) == null) {
-                    return true;
-                }
-                if (listValue.get(j) == listValue.get(j + 1)) {
-                    return true;
+        if (!board.availableSpace().isEmpty()) {
+            return true;
+        } else {
+            for (int a = 0; a < board.weigh; a++) {
+                for (int b = 0; b < board.height - 1; b++) {
+                    int temp = board.getValue(new Key(a, b));
+                    int next = board.getValue(new Key(a + 1, b));
+                    if (temp == next) {
+                        return true;
+                    }
                 }
             }
-        }
 
-        for (int i = 0; i < GAME_SIZE; i++) {
-            List<Key> listKey = board.getColumn(i);
-            List listValue = board.getValues(listKey);
-            for (int j = 0; j < GAME_SIZE - 1; j++) {
-                if (listValue.get(j) == null || listValue.get(j + 1) == null) {
-                    return true;
-                }
-                if (listValue.get(j) == listValue.get(j + 1)) {
-                    return true;
-                }
-            }
         }
         return false;
     }
 
     @Override
     public boolean move(Direction direction) {
-        return false;
+        boolean result = false;
+        if (canMove()) {
+            int count = 0;
+            List<Key> listKey = new ArrayList<>();
+
+            for (int a = 0; a < GAME_SIZE; a++) {
+                switch (direction) {
+                    case LEFT:
+                        listKey = board.getRow(a);
+                        result = true;
+                        break;
+
+                    case RIGHT:
+                        listKey = board.getRow(a);
+                        Collections.reverse(listKey);
+                        result = true;
+                        break;
+
+                    case UP:
+                        listKey = board.getColumn(a);
+                        result = true;
+                        break;
+
+                    case DOWN:
+                        listKey = board.getColumn(a);
+                        Collections.reverse(listKey);
+                        result = true;
+                        break;
+                }
+
+                List<Integer> listValues = new ArrayList();
+                for (Key key : listKey) {
+                    listValues.add(board.getValue(key));
+                }
+
+                List<Integer>  listMerge = helper.moveAndMergeEqual(listValues);
+                if (!listMerge.equals(listValues)) {
+                    for (int i = 0; i < GAME_SIZE; i++) {
+                        board.addItem(listKey.get(i), listMerge.get(i));
+                    }
+                    count++;
+                }
+            }
+            if (count > 0) {
+                try {
+                    addItem();
+                } catch (NotEnoughSpace notEnoughSpace) {
+                    notEnoughSpace.printStackTrace();
+                }
+            }
+        }
+        return result;
     }
 
+
     @Override
-    public void addItem() {
-        Key key = new Key(1 + (int) (Math.random() * ((GAME_SIZE - 1) + 1)), (1 + (int) (Math.random() * ((GAME_SIZE - 1) + 1))));
-        board.addItem(key, 2);
+    public void addItem() throws NotEnoughSpace {
+
+        if (board.availableSpace().isEmpty()) {
+            throw new NotEnoughSpace();
+        }
+        List<Key> listNullValues = board.availableSpace();
+//        int rand = (int) (Math.random() * (listNullValues.size() + 1)); // (0;listNullValues.size()]
+//        board.addItem(listNullValues.get(rand), 2);
+        Integer value = random.nextInt(9) == 9 ? 4 : 2;
+        int index = listNullValues.size() == 1 ? 0 : random.nextInt(listNullValues.size() - 1);
+        Key key = listNullValues.get(index);
+        board.addItem(key, value);
+
     }
 
     @Override
@@ -74,4 +130,6 @@ public class Game2048 implements Game {
     public boolean hasWin() {
         return board.hasValue(2048);
     }
+
 }
+

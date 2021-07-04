@@ -2,27 +2,32 @@ package ru.sbt.oop;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class GameHelper {
     public List<Integer> moveAndMergeEqual(List<Integer> list) {
+
         ArrayList<Integer> listNotNull = new ArrayList<>();
-        ArrayList<Integer> mergeList = new ArrayList<>();
-        for (Integer count : list) {
-            if (count != null) {
-                listNotNull.add(count);
+
+        for (Integer integer : list) {
+            if (integer != null) {
+                listNotNull.add(integer);
             }
         }
 
-        for (int i = 0; i < listNotNull.size(); i++) {
+        for (int i = 1; i < listNotNull.size(); i++) {
             if (listNotNull.get(i).equals(listNotNull.get(i - 1))) {
-                mergeList.add(listNotNull.get(i - 1) * 2);
+                int temp = 0;
+                temp = listNotNull.get(i - 1) * 2;
+                listNotNull.set(i - 1, temp);
+                listNotNull.set(i, 0);
             }
         }
 
-        int countNull = list.size() - mergeList.size();
+        listNotNull.removeIf(nextValue -> nextValue.equals(0));
+
+        int countNull = list.size() - listNotNull.size();
         for (int i = 0; i < countNull; i++) {
-            mergeList.add(null);
+            listNotNull.add(null);
         }
-        return mergeList;
+        return listNotNull;
     }
 }
